@@ -32,7 +32,11 @@ export const ColorEditor: React.FC<ColorEditorProps> = ({
   canPaste,
   onOpenSearchModal,
 }) => {
-  const safeColor: RGB6 = color || { r: 0, g: 0, b: 0 };
+  const safeColor: RGB6 = {
+    r: Math.max(0, Math.min(63, color?.r ?? 0)),
+    g: Math.max(0, Math.min(63, color?.g ?? 0)),
+    b: Math.max(0, Math.min(63, color?.b ?? 0)),
+  };
   const [copied, setCopied] = useState(false);
   const [hexInput, setHexInput] = useState(rgb6ToHex(safeColor));
   const [activeTab, setActiveTab] = useState<'DAC' | 'HSL' | 'VISUAL'>('DAC');
@@ -63,7 +67,16 @@ export const ColorEditor: React.FC<ColorEditorProps> = ({
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.slice(0, 8);
+          const validated = parsed
+            .filter((c: any) => c && typeof c === 'object' && typeof c.r === 'number')
+            .map((c: any) => ({
+              r: Math.max(0, Math.min(63, c.r ?? 0)),
+              g: Math.max(0, Math.min(63, c.g ?? 0)),
+              b: Math.max(0, Math.min(63, c.b ?? 0)),
+            }));
+          if (validated.length > 0) {
+            return validated.slice(0, 8);
+          }
         }
       }
     } catch {}
@@ -81,14 +94,21 @@ export const ColorEditor: React.FC<ColorEditorProps> = ({
   });
 
   const addToRecentColors = useCallback((newColor: RGB6) => {
+    if (!newColor) return;
+    const cleanColor: RGB6 = {
+      r: Math.max(0, Math.min(63, newColor?.r ?? 0)),
+      g: Math.max(0, Math.min(63, newColor?.g ?? 0)),
+      b: Math.max(0, Math.min(63, newColor?.b ?? 0)),
+    };
     setRecentColors(prev => {
+      const safePrev = (prev || []).filter(c => c && typeof c?.r === 'number');
       // Check if identical to most recent
-      if (prev.length > 0 && prev[0].r === newColor.r && prev[0].g === newColor.g && prev[0].b === newColor.b) {
-        return prev;
+      if (safePrev.length > 0 && safePrev[0].r === cleanColor.r && safePrev[0].g === cleanColor.g && safePrev[0].b === cleanColor.b) {
+        return safePrev;
       }
       // Remove any duplicate of this shade
-      const filtered = prev.filter(c => !(c.r === newColor.r && c.g === newColor.g && c.b === newColor.b));
-      const updated = [newColor, ...filtered].slice(0, 8);
+      const filtered = safePrev.filter(c => !(c.r === cleanColor.r && c.g === cleanColor.g && c.b === cleanColor.b));
+      const updated = [cleanColor, ...filtered].slice(0, 8);
       try {
         localStorage.setItem('qbasic_recent_colors', JSON.stringify(updated));
       } catch {}
@@ -106,8 +126,13 @@ export const ColorEditor: React.FC<ColorEditorProps> = ({
 
   const handleSelectRecent = (recentColor: RGB6) => {
     sound.select();
-    onChangeColor({ ...recentColor });
-    addToRecentColors(recentColor);
+    const clean: RGB6 = {
+      r: Math.max(0, Math.min(63, recentColor?.r ?? 0)),
+      g: Math.max(0, Math.min(63, recentColor?.g ?? 0)),
+      b: Math.max(0, Math.min(63, recentColor?.b ?? 0)),
+    };
+    onChangeColor(clean);
+    addToRecentColors(clean);
   };
 
   useEffect(() => {
@@ -346,9 +371,9 @@ export const ColorEditor: React.FC<ColorEditorProps> = ({
                   {searchResults.map((item, idx) => {
                     const hex = rgb6ToHex(item.color);
                     const isCurrent =
-                      safeColor.r === item.color.r &&
-                      safeColor.g === item.color.g &&
-                      safeColor.b === item.color.b;
+                      safeColor.r === (item?.color?.r ?? 0) &&
+                      safeColor.g === (item?.color?.g ?? 0) &&
+                      safeColor.b === (item?.color?.b ?? 0);
 
                     return (
                       <button
@@ -380,7 +405,7 @@ export const ColorEditor: React.FC<ColorEditorProps> = ({
                           )}
                         </div>
                         <div className="text-[10px] text-neutral-400 group-hover:text-neutral-200 shrink-0 tabular-nums">
-                          DAC: {item.color.r},{item.color.g},{item.color.b}
+                          DAC: {item?.color?.r ?? 0},{item?.color?.g ?? 0},{item?.color?.b ?? 0}
                         </div>
                       </button>
                     );
@@ -420,9 +445,9 @@ export const ColorEditor: React.FC<ColorEditorProps> = ({
 
               const hex = rgb6ToHex(rColor);
               const isCurrent =
-                safeColor.r === rColor.r &&
-                safeColor.g === rColor.g &&
-                safeColor.b === rColor.b;
+                safeColor.r === (rColor?.r ?? 0) &&
+                safeColor.g === (rColor?.g ?? 0) &&
+                safeColor.b === (rColor?.b ?? 0);
 
               return (
                 <button
@@ -435,7 +460,7 @@ export const ColorEditor: React.FC<ColorEditorProps> = ({
                       : 'border-neutral-500 hover:border-cyan-300'
                   }`}
                   style={{ backgroundColor: hex }}
-                  title={`Recent #${slotIdx + 1}\nDAC: R:${rColor.r} G:${rColor.g} B:${rColor.b}\nHex: ${hex}\nClick to apply to Color #${index}`}
+                  title={`Recent #${slotIdx + 1}\nDAC: R:${rColor?.r ?? 0} G:${rColor?.g ?? 0} B:${rColor?.b ?? 0}\nHex: ${hex}\nClick to apply to Color #${index}`}
                 >
                   {isCurrent && (
                     <span className="absolute inset-0 flex items-center justify-center pointer-events-none">

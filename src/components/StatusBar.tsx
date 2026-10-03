@@ -18,7 +18,11 @@ export const StatusBar: React.FC<StatusBarProps> = ({
   onOpenExport,
   onOpenSearch,
 }) => {
-  const safeColor: RGB6 = activeColor || { r: 0, g: 0, b: 0 };
+  const safeColor: RGB6 = {
+    r: Math.max(0, Math.min(63, activeColor?.r ?? 0)),
+    g: Math.max(0, Math.min(63, activeColor?.g ?? 0)),
+    b: Math.max(0, Math.min(63, activeColor?.b ?? 0)),
+  };
   const hex = rgb6ToHex(safeColor);
 
   return (

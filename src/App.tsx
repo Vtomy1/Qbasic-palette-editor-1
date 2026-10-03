@@ -90,10 +90,19 @@ export default function App() {
 
   // Update a single color in the palette
   const handleColorChange = useCallback((newColor: RGB6) => {
-    const updated = [...palette];
-    updated[activeIndex] = newColor;
-    updatePalette(updated);
-  }, [palette, activeIndex, updatePalette]);
+    setPalette(prev => {
+      if (!prev || prev.length === 0) return prev;
+      const targetIdx = Math.max(0, Math.min(prev.length - 1, activeIndex));
+      const updated = [...prev];
+      updated[targetIdx] = {
+        r: Math.max(0, Math.min(63, newColor?.r ?? 0)),
+        g: Math.max(0, Math.min(63, newColor?.g ?? 0)),
+        b: Math.max(0, Math.min(63, newColor?.b ?? 0)),
+      };
+      pushHistory(updated);
+      return updated;
+    });
+  }, [activeIndex, pushHistory]);
 
   // Undo action
   const handleUndo = useCallback(() => {
@@ -183,14 +192,23 @@ export default function App() {
 
   // Copy active color to clipboard buffer
   const handleCopyActiveColor = () => {
-    setCopiedColor({ ...palette[activeIndex] });
+    const c = palette[safeActiveIndex] || palette[0] || { r: 0, g: 0, b: 0 };
+    setCopiedColor({
+      r: c?.r ?? 0,
+      g: c?.g ?? 0,
+      b: c?.b ?? 0,
+    });
   };
 
   // Paste active color from clipboard buffer
   const handlePasteActiveColor = () => {
     if (copiedColor) {
       sound.click();
-      handleColorChange({ ...copiedColor });
+      handleColorChange({
+        r: copiedColor?.r ?? 0,
+        g: copiedColor?.g ?? 0,
+        b: copiedColor?.b ?? 0,
+      });
     }
   };
 
@@ -200,7 +218,12 @@ export default function App() {
     for (let i = 0; i < rampColors.length; i++) {
       const targetIdx = startIndex + i;
       if (targetIdx < updated.length) {
-        updated[targetIdx] = { ...rampColors[i] };
+        const rc = rampColors[i];
+        updated[targetIdx] = {
+          r: rc?.r ?? 0,
+          g: rc?.g ?? 0,
+          b: rc?.b ?? 0,
+        };
       }
     }
     updatePalette(updated);
@@ -239,15 +262,17 @@ export default function App() {
   // Batch Invert Selected
   const handleBatchInvert = () => {
     sound.chirp();
-    const s = selectionRange ? selectionRange[0] : activeIndex;
-    const e = selectionRange ? selectionRange[1] : activeIndex;
+    const maxIdx = Math.max(0, palette.length - 1);
+    const safeIdx = Math.max(0, Math.min(maxIdx, activeIndex));
+    const s = Math.max(0, Math.min(maxIdx, selectionRange ? selectionRange[0] : safeIdx));
+    const e = Math.max(0, Math.min(maxIdx, selectionRange ? selectionRange[1] : safeIdx));
     const updated = [...palette];
     for (let i = s; i <= e; i++) {
       if (updated[i]) {
         updated[i] = {
-          r: 63 - updated[i].r,
-          g: 63 - updated[i].g,
-          b: 63 - updated[i].b,
+          r: 63 - (updated[i]?.r ?? 0),
+          g: 63 - (updated[i]?.g ?? 0),
+          b: 63 - (updated[i]?.b ?? 0),
         };
       }
     }
@@ -257,12 +282,17 @@ export default function App() {
   // Batch Grayscale Selected
   const handleBatchGrayscale = () => {
     sound.chirp();
-    const s = selectionRange ? selectionRange[0] : activeIndex;
-    const e = selectionRange ? selectionRange[1] : activeIndex;
+    const maxIdx = Math.max(0, palette.length - 1);
+    const safeIdx = Math.max(0, Math.min(maxIdx, activeIndex));
+    const s = Math.max(0, Math.min(maxIdx, selectionRange ? selectionRange[0] : safeIdx));
+    const e = Math.max(0, Math.min(maxIdx, selectionRange ? selectionRange[1] : safeIdx));
     const updated = [...palette];
     for (let i = s; i <= e; i++) {
       if (updated[i]) {
-        const lum = Math.round(0.299 * updated[i].r + 0.587 * updated[i].g + 0.114 * updated[i].b);
+        const r = updated[i]?.r ?? 0;
+        const g = updated[i]?.g ?? 0;
+        const b = updated[i]?.b ?? 0;
+        const lum = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
         updated[i] = { r: lum, g: lum, b: lum };
       }
     }
@@ -272,15 +302,17 @@ export default function App() {
   // Batch Brightness
   const handleBatchBrightness = (delta: number) => {
     sound.click();
-    const s = selectionRange ? selectionRange[0] : activeIndex;
-    const e = selectionRange ? selectionRange[1] : activeIndex;
+    const maxIdx = Math.max(0, palette.length - 1);
+    const safeIdx = Math.max(0, Math.min(maxIdx, activeIndex));
+    const s = Math.max(0, Math.min(maxIdx, selectionRange ? selectionRange[0] : safeIdx));
+    const e = Math.max(0, Math.min(maxIdx, selectionRange ? selectionRange[1] : safeIdx));
     const updated = [...palette];
     for (let i = s; i <= e; i++) {
       if (updated[i]) {
         updated[i] = {
-          r: Math.max(0, Math.min(63, updated[i].r + delta)),
-          g: Math.max(0, Math.min(63, updated[i].g + delta)),
-          b: Math.max(0, Math.min(63, updated[i].b + delta)),
+          r: Math.max(0, Math.min(63, (updated[i]?.r ?? 0) + delta)),
+          g: Math.max(0, Math.min(63, (updated[i]?.g ?? 0) + delta)),
+          b: Math.max(0, Math.min(63, (updated[i]?.b ?? 0) + delta)),
         };
       }
     }

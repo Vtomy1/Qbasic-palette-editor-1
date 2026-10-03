@@ -41,7 +41,7 @@ export function generateQBasicCode(
     const valuesPerLine = 18; // 6 RGB triplets per line for clean 80-col DOS terminal
     for (let i = 0; i < colorsToExport.length; i += 6) {
       const chunk = colorsToExport.slice(i, i + 6);
-      const tripletStr = chunk.map(c => `${c.r},${c.g},${c.b}`).join(', ');
+      const tripletStr = chunk.map(c => `${c?.r ?? 0},${c?.g ?? 0},${c?.b ?? 0}`).join(', ');
       code += `DATA ${tripletStr}\n`;
     }
 
@@ -59,7 +59,7 @@ export function generateQBasicCode(
       const idx = startIndex + i;
       const c = colorsToExport[i];
       const val = rgb6ToQbasicLong(c);
-      code += `PALETTE ${idx}, ${val}& ' R:${c.r} G:${c.g} B:${c.b}\n`;
+      code += `PALETTE ${idx}, ${val}& ' R:${c?.r ?? 0} G:${c?.g ?? 0} B:${c?.b ?? 0}\n`;
     }
     return code;
   }
@@ -123,7 +123,7 @@ export function generateQBasicCode(
 
   for (let i = 0; i < palette.length; i += 6) {
     const chunk = palette.slice(i, i + 6);
-    const tripletStr = chunk.map(c => `${c.r},${c.g},${c.b}`).join(', ');
+    const tripletStr = chunk.map(c => `${c?.r ?? 0},${c?.g ?? 0},${c?.b ?? 0}`).join(', ');
     demo += `DATA ${tripletStr}\n`;
   }
 
@@ -136,9 +136,9 @@ export function generateQBasicCode(
 export function generateJascPal(palette: RGB6[]): string {
   let content = `JASC-PAL\r\n0100\r\n${palette.length}\r\n`;
   for (const c of palette) {
-    const r8 = dac6ToRgb8(c.r);
-    const g8 = dac6ToRgb8(c.g);
-    const b8 = dac6ToRgb8(c.b);
+    const r8 = dac6ToRgb8(c?.r ?? 0);
+    const g8 = dac6ToRgb8(c?.g ?? 0);
+    const b8 = dac6ToRgb8(c?.b ?? 0);
     content += `${r8} ${g8} ${b8}\r\n`;
   }
   return content;
@@ -152,9 +152,9 @@ export function generateAdobeAct(palette: RGB6[]): Uint8Array {
   const buffer = new Uint8Array(768);
   for (let i = 0; i < 256; i++) {
     const c = palette[i] || { r: 0, g: 0, b: 0 };
-    buffer[i * 3 + 0] = dac6ToRgb8(c.r);
-    buffer[i * 3 + 1] = dac6ToRgb8(c.g);
-    buffer[i * 3 + 2] = dac6ToRgb8(c.b);
+    buffer[i * 3 + 0] = dac6ToRgb8(c?.r ?? 0);
+    buffer[i * 3 + 1] = dac6ToRgb8(c?.g ?? 0);
+    buffer[i * 3 + 2] = dac6ToRgb8(c?.b ?? 0);
   }
   return buffer;
 }
@@ -169,10 +169,10 @@ export function generateGimpPal(palette: RGB6[], paletteName: string = 'QBasic P
   content += `# Exported from QBasic Palette Editor (18-bit VGA DAC)\n`;
   for (let i = 0; i < palette.length; i++) {
     const c = palette[i];
-    const r8 = dac6ToRgb8(c.r).toString().padStart(3, ' ');
-    const g8 = dac6ToRgb8(c.g).toString().padStart(3, ' ');
-    const b8 = dac6ToRgb8(c.b).toString().padStart(3, ' ');
-    content += `${r8} ${g8} ${b8}  Index ${i} (DAC ${c.r},${c.g},${c.b})\n`;
+    const r8 = dac6ToRgb8(c?.r ?? 0).toString().padStart(3, ' ');
+    const g8 = dac6ToRgb8(c?.g ?? 0).toString().padStart(3, ' ');
+    const b8 = dac6ToRgb8(c?.b ?? 0).toString().padStart(3, ' ');
+    content += `${r8} ${g8} ${b8}  Index ${i} (DAC ${c?.r ?? 0},${c?.g ?? 0},${c?.b ?? 0})\n`;
   }
   return content;
 }

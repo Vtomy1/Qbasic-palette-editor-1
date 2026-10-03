@@ -14,7 +14,11 @@ export const VisualColorPicker: React.FC<VisualColorPickerProps> = ({
   onChangeColor,
   onApplyColor,
 }) => {
-  const safeColor = color || { r: 0, g: 0, b: 0 };
+  const safeColor: RGB6 = {
+    r: Math.max(0, Math.min(63, color?.r ?? 0)),
+    g: Math.max(0, Math.min(63, color?.g ?? 0)),
+    b: Math.max(0, Math.min(63, color?.b ?? 0)),
+  };
   const hsv = rgb6ToHsv(safeColor);
 
   const [hue, setHue] = useState<number>(hsv.h);

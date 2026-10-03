@@ -121,9 +121,9 @@ export const ColorSearchModal: React.FC<ColorSearchModalProps> = ({
               {filteredColors.map((item, idx) => {
                 const hex = rgb6ToHex(item.color);
                 const isCurrent =
-                  currentColor.r === item.color.r &&
-                  currentColor.g === item.color.g &&
-                  currentColor.b === item.color.b;
+                  (currentColor?.r ?? 0) === (item?.color?.r ?? 0) &&
+                  (currentColor?.g ?? 0) === (item?.color?.g ?? 0) &&
+                  (currentColor?.b ?? 0) === (item?.color?.b ?? 0);
 
                 return (
                   <button
@@ -153,7 +153,7 @@ export const ColorSearchModal: React.FC<ColorSearchModalProps> = ({
                         )}
                       </div>
                       <div className="text-[10px] text-neutral-400 flex items-center gap-2">
-                        <span>DAC: {item.color.r},{item.color.g},{item.color.b}</span>
+                        <span>DAC: {item?.color?.r ?? 0},{item?.color?.g ?? 0},{item?.color?.b ?? 0}</span>
                         <span>·</span>
                         <span className="text-neutral-500">{hex}</span>
                       </div>

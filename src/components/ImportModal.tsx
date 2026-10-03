@@ -183,7 +183,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                   key={i}
                   className="w-3.5 h-3.5"
                   style={{ backgroundColor: rgb6ToHex(c) }}
-                  title={`#${i}: DAC R:${c.r} G:${c.g} B:${c.b}`}
+                  title={`#${i}: DAC R:${c?.r ?? 0} G:${c?.g ?? 0} B:${c?.b ?? 0}`}
                 />
               ))}
             </div>

@@ -45,12 +45,18 @@ export const GradientGenerator: React.FC<GradientGeneratorProps> = ({
     const result: RGB6[] = [];
 
     if (interpolationMode === 'RGB') {
+      const sr = startColor?.r ?? 0;
+      const sg = startColor?.g ?? 0;
+      const sb = startColor?.b ?? 0;
+      const er = endColor?.r ?? 0;
+      const eg = endColor?.g ?? 0;
+      const eb = endColor?.b ?? 0;
       for (let i = 0; i < count; i++) {
         const t = i / (count - 1);
         result.push({
-          r: Math.round(startColor.r + (endColor.r - startColor.r) * t),
-          g: Math.round(startColor.g + (endColor.g - startColor.g) * t),
-          b: Math.round(startColor.b + (endColor.b - startColor.b) * t),
+          r: Math.round(sr + (er - sr) * t),
+          g: Math.round(sg + (eg - sg) * t),
+          b: Math.round(sb + (eb - sb) * t),
         });
       }
     } else {
@@ -227,7 +233,7 @@ export const GradientGenerator: React.FC<GradientGeneratorProps> = ({
                 key={i}
                 className="flex-1 h-full"
                 style={{ backgroundColor: rgb6ToHex(color) }}
-                title={`Step ${i}: DAC R:${color.r} G:${color.g} B:${color.b}`}
+                title={`Step ${i}: DAC R:${color?.r ?? 0} G:${color?.g ?? 0} B:${color?.b ?? 0}`}
               />
             ))}
           </div>

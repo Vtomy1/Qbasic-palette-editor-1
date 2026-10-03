@@ -63,9 +63,9 @@ export function rgb8ToDac6(c8?: number): number {
 // Convert RGB6 to hex string "#RRGGBB"
 export function rgb6ToHex(color?: RGB6 | null): string {
   if (!color) return '#000000';
-  const r8 = dac6ToRgb8(color.r);
-  const g8 = dac6ToRgb8(color.g);
-  const b8 = dac6ToRgb8(color.b);
+  const r8 = dac6ToRgb8(color?.r ?? 0);
+  const g8 = dac6ToRgb8(color?.g ?? 0);
+  const b8 = dac6ToRgb8(color?.b ?? 0);
   const toHex = (n: number) => n.toString(16).padStart(2, '0').toUpperCase();
   return `#${toHex(r8)}${toHex(g8)}${toHex(b8)}`;
 }
@@ -92,9 +92,9 @@ export function hexToRgb6(hex: string): RGB6 {
 // Convert RGB6 to HSL
 export function rgb6ToHsl(color?: RGB6 | null): HSL {
   if (!color) return { h: 0, s: 0, l: 0 };
-  const r = dac6ToRgb8(color.r) / 255;
-  const g = dac6ToRgb8(color.g) / 255;
-  const b = dac6ToRgb8(color.b) / 255;
+  const r = dac6ToRgb8(color?.r ?? 0) / 255;
+  const g = dac6ToRgb8(color?.g ?? 0) / 255;
+  const b = dac6ToRgb8(color?.b ?? 0) / 255;
 
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
@@ -164,9 +164,9 @@ export function hslToRgb6(hsl: HSL): RGB6 {
 // Convert RGB6 to HSV
 export function rgb6ToHsv(color?: RGB6 | null): HSV {
   if (!color) return { h: 0, s: 0, v: 0 };
-  const r = dac6ToRgb8(color.r) / 255;
-  const g = dac6ToRgb8(color.g) / 255;
-  const b = dac6ToRgb8(color.b) / 255;
+  const r = dac6ToRgb8(color?.r ?? 0) / 255;
+  const g = dac6ToRgb8(color?.g ?? 0) / 255;
+  const b = dac6ToRgb8(color?.b ?? 0) / 255;
 
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
