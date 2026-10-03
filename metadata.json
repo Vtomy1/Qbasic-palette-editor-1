@@ -1,0 +1,6 @@
+{
+  "name": "QBasic Palette Editor",
+  "description": "Retro MS-DOS VGA palette creator, editor, and exporter for QBasic, QuickBASIC, and DOS game development.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

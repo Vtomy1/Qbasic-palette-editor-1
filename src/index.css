@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .grid-cols-16 {
+    grid-template-columns: repeat(16, minmax(0, 1fr));
+  }
+}
+
+/* CRT Scanlines Overlay */
+.crt-overlay {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.22) 50%
+  );
+  background-size: 100% 3px;
+  pointer-events: none;
+}
+
+/* Retro CRT Phosphor Glow */
+.crt-glow {
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+/* Pixel rendering */
+.image-rendering-pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Retro DOS Scrollbars */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000080;
+  border-left: 1px solid #00AAAA;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #AAAAAA;
+  border: 2px solid;
+  border-color: #FFFFFF #000000 #000000 #FFFFFF;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #CCCCCC;
+}
